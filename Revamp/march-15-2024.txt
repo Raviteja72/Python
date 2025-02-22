@@ -1,0 +1,467 @@
+[9:47 AM] Sanyal, Dibakar (Cognizant)
+Introduction to Python exceptions
+
+==========================================
+
+In Python, exceptions are objects of the exception classes. All exception classes are the subclasses of the BaseException class.
+ 
+However, almost all built-in exception classes inherit from the Exception class, which is the subclass of the BaseException class:
+ 
+ 
+ 
+The following example defines a list of three elements and attempts to access the fourth one:
+ 
+colors = ['red', 'green', 'blue']
+ 
+print(colors[3])
+ 
+The invalid index caused the IndexError exception as expected:
+ 
+IndexError: list index out of range
+ 
+ 
+To handle exceptions, you use the try statement. The try statement has the following clauses:
+ 
+try:
+
+    # code that you want to protect from exceptions
+
+except <ExceptionType> as ex:
+
+    # code that handle the exception
+
+finally:
+
+    # code that always execute whether the exception occurred or not
+
+else:
+
+    # code that excutes if try execute normally (an except clause must be present)
+ 
+ 
+try
+
+In the try clause, you place the code that protects from one or more potential exceptions. It’s a good practice to keep the code as short as possible. Often, you’ll have a single statement in the try clause.
+ 
+The try clause appears exactly one time in the try statement.
+ 
+except
+
+In the except clause, you place the code that handles a specific exception type. A try statement can have zero or more except clauses. Typically, each except clause handles different exception types in specific ways.
+ 
+In an except clause, the as ex is optional. And the <ExceptionType> is also optional. However, if you omit the <ExceptionType> as ex, you’ll have a bare exception handler.
+ 
+When specifying exception types in the except clauses, you place the most specific to least specific exceptions from top to bottom.
+ 
+If you have the same logic that handles different exception types, you can group them in a single except clause. For example:
+ 
+try:
+
+...
+
+except <ExceptionType1> as ex:
+
+    log(ex)
+
+except <ExceptionType2> as ex:
+
+    log(ex)
+ 
+Become
+ 
+try:
+
+...
+
+except (<ExceptionType1>, <ExceptionType2>) as ex:
+
+    log(ex)
+ 
+It’s important to note that the except order matters because Python will run the first except clause whose exception type matches the occurred exception.
+ 
+finally
+
+The finally clause may appear zero or 1 time in a try statement. The finally clause always executes whether an exception occurred or not.
+ 
+else
+
+The else clause also appears zero or 1 time. And the else clause is only valid if the try statement has at least one except clause.
+ 
+Typically, you place the code that executes if the try clause terminates normally.
+ 
+ 
+When an exception occurs, Python stops the program unless you handle it. To handle an exception, you use the try...except statement. For example:
+ 
+colors = ['red', 'green', 'blue']
+ 
+try:
+
+    print(colors[3])
+
+except IndexError as e:
+
+    print(e)
+ 
+ 
+print('Continue to run')
+ 
+ 
+Output:
+ 
+<class 'IndexError'> - list index out of range
+
+Continue to run
+ 
+ 
+And you can catch either LookupError or Exception class when an IndexError exception occurs. For example:
+ 
+colors = ['red', 'green', 'blue']
+ 
+try:
+
+    print(colors[3])
+
+except LookupError as e:
+
+    print(e.__class__, '-', e)
+ 
+print('Continue to run')
+ 
+Output:
+ 
+<class 'IndexError'> - list index out of range
+
+Continue to run
+ 
+ 
+The program runs the same if you use the Exception class instead of the LookupError class:
+ 
+colors = ['red', 'green', 'blue']
+ 
+try:
+
+    print(colors[3])
+
+except Exception as e:
+
+    print(e.__class__, '-', e)
+ 
+print('Continue to run')
+ 
+Output:
+ 
+<class 'IndexError'> - list index out of range
+
+Continue to run
+ 
+ 
+Another example:
+ 
+def division(a, b):
+
+    try:
+
+        return {
+
+            'success': True,
+
+            'message': 'OK',
+
+            'result': a / b
+
+        }
+
+    except ZeroDivisionError as e:
+
+        return {
+
+            'success': False,
+
+            'message': 'b cannot be zero',
+
+            'result': None
+
+        }
+ 
+ 
+result = division(10, 0)
+
+print(result)
+ 
+ 
+Now, if you don’t catch the ZeroDivisionError exception but the more general exception like Exception class:
+ 
+def division(a, b):
+
+    try:
+
+        return {
+
+            'success': True,
+
+            'message': 'OK',
+
+            'result': a / b
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            'success': False,
+
+            'message': 'b cannot be zero',
+
+            'result': None
+
+        }
+ 
+ 
+result = division(10, 0)
+
+print(result)
+ 
+The program works as before because the try...except also catches the exception type that is the subclass of the Exception class.
+ 
+ 
+However, if you pass two strings instead of two numbers to the division() function, you’ll get the same message as if the ZeroDivisionError exception occurred:
+ 
+def division(a, b):
+
+    try:
+
+        return {
+
+            'success': True,
+
+            'message': 'OK',
+
+            'result': a / b
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            'success': False,
+
+            'message': 'b cannot be zero',
+
+            'result': None
+
+        }
+ 
+ 
+result = division('10', '2')
+
+print(result)
+ 
+Output:
+ 
+{'success': False, 'message': 'b cannot be zero', 'result': None}
+ 
+ 
+Therefore, you should always handle the exceptions from the most specific to the least specific. For example:
+ 
+def division(a, b):
+
+    try:
+
+        return {
+
+            'success': True,
+
+            'message': 'OK',
+
+            'result': a / b
+
+        }
+
+    except TypeError as e:
+
+        return {
+
+            'success': False,
+
+            'message': 'Both a & b must be numbers',
+
+            'result': None
+
+        }
+
+    except ZeroDivisionError as e:
+
+        return {
+
+            'success': False,
+
+            'message': 'b cannot be zero',
+
+            'result': None
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            'success': False,
+
+            'message': str(e),
+
+            'result': None
+
+        }
+ 
+ 
+result = division('10', '2')
+
+print(result)
+ 
+In this example, we catch the TypeError, ZeroDivisionError, and Exception in the order that they appear in the try...except statement.
+ 
+ 
+If the code that handles different exceptions are the same, you can group all exceptions into one as follows:
+ 
+def division(a, b):
+
+    try:
+
+        return {
+
+            'success': True,
+
+            'message': 'OK',
+
+            'result': a / b
+
+        }
+
+    except (TypeError, ZeroDivisionError, Exception) as e:
+
+        return {
+
+            'success': False,
+
+            'message': str(e),
+
+            'result': None
+
+        }
+ 
+ 
+result = division(10, 0)
+
+print(result)
+ 
+Output:
+ 
+{'success': False, 'message': 'division by zero', 'result': None}
+ 
+ 
+A better approach is to raise an exception to the caller if the ZeroDivisionError exception occurred. For example:
+ 
+def divide(a, b):
+
+    try:
+
+        return a / b
+
+    except ZeroDivisionError as ex:
+
+        raise ValueError('The second argument (b) must not be zero')
+ 
+ 
+try:
+
+    result = divide(10, 0)
+
+except ValueError as e:
+
+    print(e)
+
+else:
+
+    print('result:', result)
+ 
+Output:
+ 
+The second argument (b) must not be zero
+ 
+ 
+ 
+To create a custom exception class, you define a class that inherits from the built-in Exception class or one of its subclasses such as ValueError class:
+ 
+The following example defines a CustomException class that inherits from the Exception class:
+ 
+class CustomException(Exception):
+
+    """ my custom exception class """
+ 
+Note that the CustomException class has a docstring that behaves like a statement. Therefore, you don’t need to add the pass statement to make the syntax valid.
+ 
+ 
+To raise the CustomException, you use the raise statement. For example, the following uses the raise statement to raise the CustomException:
+ 
+class CustomException(Exception):
+
+    """ my custom exception class """
+ 
+ 
+try:
+
+    raise CustomException('This is my custom exception')
+
+except CustomException as ex:
+
+    print(ex)
+ 
+Output:
+ 
+This is my custom exception
+ 
+ 
+Python custom exception example
+ 
+class FahrenheitError(Exception):
+
+    min_f = 32
+
+    max_f = 212
+ 
+    def __init__(self, f, *args):
+
+        super().__init__(args)
+
+        self.f = f
+ 
+    def __str__(self):
+
+        return f'The {self.f} is not in a valid range {self.min_f, self.max_f}'
+ 
+ 
+How it works.
+ 
+First, define the FahrenheitError class that inherits from the Exception class.
+
+Second, add two class attributes min_f and max_f that represent the minimum and maximum Fahrenheit values.
+
+Third, define the __init__ method that accepts a Fahrenheit value (f) and a number of position arguments (*args). In the __init__ method, call the __init__ method of the base class. Also, assign the f argument to the f instance attribute.
+
+Finally, override the __str__ method to return a custom string representation of the class instance.
+ 
+Define the fahrenheit_to_celsius function
+
+The following defines the fahrenheit_to_celsius function that accepts a temperature in Fahrenheit and returns a temperature in Celcius:
+ 
+def fahrenheit_to_celsius(f: float) -> float:
+
+    if f < FahrenheitError.min_f or f > FahrenheitError.max_f:
+
+        raise FahrenheitError(f)
+ 
+    return (f - 32) * 5 / 9
+ 
+The fahrenheit_to_celsius function raises the FahrenheitError excpetion if the input temperature is not in the valid range. Otherwise, it converts the temperature from Fahrenheit to Celcius.
